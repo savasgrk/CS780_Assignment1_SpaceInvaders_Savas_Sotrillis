@@ -1,0 +1,5 @@
+1) ALiens and alien bullet speed up by 5% per alien death (capped)
+2) Spaceship can not go off screen anymore, will wrap around instead
+3) Keyboard not required for the game anymore, can use gamepad
+4) Updated the fleets dimensions - if an outside column/row of aliens dies, the fleet size changes
+5) The fleet now reaches the camera's screen edges before descending and reversing, adapting to screen size without overshooting. No longer a fixed value
