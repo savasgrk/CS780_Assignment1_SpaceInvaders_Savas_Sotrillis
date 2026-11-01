@@ -250,6 +250,21 @@ public class GameSession : MonoBehaviour
         scaler.referenceResolution = new Vector2(1280, 720);
         scaler.matchWidthOrHeight = 0.5f;
 
+        AlienCounter alienCounter = FindAnyObjectByType<AlienCounter>();
+        if (alienCounter != null)
+        {
+            TextMeshProUGUI counterText = alienCounter.GetComponent<TextMeshProUGUI>();
+            RectTransform counterRect = counterText.rectTransform;
+            counterRect.SetParent(root.transform, false);
+            counterRect.anchorMin = counterRect.anchorMax = new Vector2(0, 1);
+            counterRect.pivot = new Vector2(0.5f, 0.5f);
+            counterRect.anchoredPosition = new Vector2(170, -28);
+            counterRect.sizeDelta = new Vector2(320, 42);
+            counterText.fontSize = 24;
+            counterText.alignment = TextAlignmentOptions.Center;
+            counterText.raycastTarget = false;
+        }
+
         shieldText = MakeText(root.transform, "Shield charges", "", new Vector2(270, 42), new Vector2(150, -76), 24);
         shieldText.rectTransform.anchorMin = shieldText.rectTransform.anchorMax = new Vector2(0, 1);
         livesText = MakeText(root.transform, "Lives", "", new Vector2(270, 42), new Vector2(150, -118), 24);
