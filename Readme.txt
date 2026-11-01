@@ -1,6 +1,3 @@
-# CS780_Assignment1_SpaceInvaders_Savas_Sotrillis
-Video Game Design and Development Fall 2026 Assignment 1: Space Invaders - Savas Sotrillis
-
 Changes as I coded (I listed these as a I updated, see the assignment requirement under HW Requirement section of the readme)
 1) Aliens and alien bullet speed up by 5% per alien death (capped)
 2) Spaceship can not go off screen anymore, will wrap around instead
@@ -28,7 +25,7 @@ Changes as I coded (I listed these as a I updated, see the assignment requiremen
 
 
 #-----------------------------------------------------------------------------------HW Requirements-----------------------------------------------------------------------------------#
-#The 1st part of the homework that aid complete all of the following
+#The 1st part of the homework that said complete all of the following
 1) Aliens speed up as aliens get destroyed
 2) Added logic to detect when alines have reached a point on the screen that the game is no longer possible to win (the red line).
 2.1) player wins now if all aliens are defeated, player loses if ship is destroyed or aliens reach the red line.

@@ -1,14 +1,14 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SpaceBackdrop : MonoBehaviour
 {
     private Camera gameplayCamera;
     private Sprite backgroundSprite;
-    private Sprite lineSprite;
     private Transform background;
-    private Transform defeatLine;
-    private TextMeshPro lineLabel;
+    private Canvas lineCanvas;
+    private RectTransform defeatLine;
 
     void Start()
     {
@@ -18,18 +18,28 @@ public class SpaceBackdrop : MonoBehaviour
         gameplayCamera.backgroundColor = new Color(0.015f, 0.02f, 0.06f);
         backgroundSprite = CreateStarfield();
         background = MakeVisual("Nebula and stars", backgroundSprite, -100);
-        lineSprite = SpaceArt.MakeSprite(1, new[] { Color.white });
-        defeatLine = MakeVisual("Alien defeat line", lineSprite, -1);
-        defeatLine.GetComponent<SpriteRenderer>().color = new Color(1f, 0.3f, 0.35f, 0.75f);
-        GameObject label = new GameObject("Defeat line label", typeof(TextMeshPro));
-        label.transform.SetParent(transform, false);
-        lineLabel = label.GetComponent<TextMeshPro>();
+        GameObject overlay = new GameObject("Defeat line overlay", typeof(RectTransform), typeof(Canvas));
+        lineCanvas = overlay.GetComponent<Canvas>();
+        lineCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        lineCanvas.sortingOrder = 50;
+        GameObject line = new GameObject("Alien defeat line", typeof(RectTransform), typeof(Image));
+        line.transform.SetParent(overlay.transform, false);
+        defeatLine = line.GetComponent<RectTransform>();
+        Image lineImage = line.GetComponent<Image>();
+        lineImage.color = new Color(1f, 0.3f, 0.35f, 0.9f);
+        lineImage.raycastTarget = false;
+        GameObject label = new GameObject("Defeat line label", typeof(RectTransform), typeof(TextMeshProUGUI));
+        label.transform.SetParent(line.transform, false);
+        TextMeshProUGUI lineLabel = label.GetComponent<TextMeshProUGUI>();
         lineLabel.text = "DEFEND THIS LINE";
-        lineLabel.fontSize = 2.3f;
-        lineLabel.alignment = TextAlignmentOptions.Center;
+        lineLabel.fontSize = 16f;
+        lineLabel.alignment = TextAlignmentOptions.TopLeft;
         lineLabel.color = new Color(1f, 0.5f, 0.55f);
-        lineLabel.rectTransform.sizeDelta = new Vector2(8f, 0.6f);
-        lineLabel.GetComponent<MeshRenderer>().sortingOrder = -1;
+        lineLabel.raycastTarget = false;
+        lineLabel.rectTransform.anchorMin = lineLabel.rectTransform.anchorMax = new Vector2(0f, 0.5f);
+        lineLabel.rectTransform.pivot = new Vector2(0f, 1f);
+        lineLabel.rectTransform.anchoredPosition = new Vector2(12f, -8f);
+        lineLabel.rectTransform.sizeDelta = new Vector2(300f, 28f);
         LateUpdate();
     }
 
@@ -53,10 +63,13 @@ public class SpaceBackdrop : MonoBehaviour
         Vector3 top = gameplayCamera.ViewportToWorldPoint(new Vector3(0.5f, 1f, depth));
         background.position = new Vector3((left.x + right.x) * 0.5f, (bottom.y + top.y) * 0.5f, 5f);
         background.localScale = new Vector3(right.x - left.x, top.y - bottom.y, 1f);
-        float lineY = GameSession.Instance.DefeatLineY;
-        defeatLine.position = new Vector3((left.x + right.x) * 0.5f, lineY, 0.5f);
-        defeatLine.localScale = new Vector3(right.x - left.x, 0.035f, 1f);
-        lineLabel.transform.position = new Vector3(left.x + 4f, lineY - 0.4f, 0.5f);
+        if (GameSession.Instance == null || defeatLine == null) return;
+        float screenY = gameplayCamera.WorldToScreenPoint(new Vector3(0f, GameSession.Instance.DefeatLineY, 0f)).y;
+        float anchorY = screenY / Mathf.Max(1, Screen.height);
+        defeatLine.anchorMin = new Vector2(gameplayCamera.rect.xMin, anchorY);
+        defeatLine.anchorMax = new Vector2(gameplayCamera.rect.xMax, anchorY);
+        defeatLine.anchoredPosition = Vector2.zero;
+        defeatLine.sizeDelta = new Vector2(0f, Mathf.Max(3f, Screen.height * 0.002f));
     }
 
     private static Sprite CreateStarfield()
@@ -97,6 +110,6 @@ public class SpaceBackdrop : MonoBehaviour
     void OnDestroy()
     {
         if (backgroundSprite != null) { Destroy(backgroundSprite.texture); Destroy(backgroundSprite); }
-        if (lineSprite != null) { Destroy(lineSprite.texture); Destroy(lineSprite); }
+        if (lineCanvas != null) Destroy(lineCanvas.gameObject);
     }
 }
